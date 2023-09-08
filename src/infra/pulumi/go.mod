@@ -43,7 +43,9 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pkg/term v1.1.0 // indirect
 	github.com/pulumi/pulumi-azure-native-sdk/containerservice/v2 v2.5.0 // indirect
+	github.com/pulumi/pulumi-azure-native-sdk/network/v2 v2.5.0 // indirect
 	github.com/pulumi/pulumi-azure-native-sdk/v2 v2.5.0 // indirect
+	github.com/pulumi/pulumi-azure/sdk/v5 v5.49.0 // indirect
 	github.com/pulumi/pulumi-azuread/sdk/v4 v4.3.0 // indirect
 	github.com/pulumi/pulumi-random/sdk/v4 v4.13.2 // indirect
 	github.com/pulumi/pulumi-tls/sdk/v4 v4.10.0 // indirect
