@@ -10,7 +10,7 @@ import (
 )
 
 func CreateStorageAccount(ctx *pulumi.Context, resourceGroup *resources.ResourceGroup) error {
-	storageAccountName := os.Getenv("AZURESTORAGEACCOUNTNAME")
+	storageAccountName := "TasteBuddiesInfra"
 	accountName := os.Getenv("AZUREACCOUNTNAME")
 	storageSku := os.Getenv("AZURESTORAGEACCOUNTSKU")
 	vnet, _ := CreateVirtualNetwork(ctx, resourceGroup)
