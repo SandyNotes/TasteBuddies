@@ -7,6 +7,9 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+/*
+Creates a resource group for the aks cluster
+*/
 func CreateResource(ctx *pulumi.Context) (*resources.ResourceGroup, error) {
 	resourceGroupName := os.Getenv("RESOURCEGROUPNAME")
 

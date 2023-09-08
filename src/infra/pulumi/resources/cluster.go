@@ -9,6 +9,9 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+/*
+Creates the aks cluster
+*/
 func CreateCluster(ctx *pulumi.Context) error {
 	aksClusterName := os.Getenv("AKSCLUSTERNAME")
 	aksAgentPoolName := os.Getenv("AKSAGENTPOOLNAME")
