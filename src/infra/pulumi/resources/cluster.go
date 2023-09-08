@@ -24,7 +24,6 @@ func CreateCluster(ctx *pulumi.Context) error {
 	sshKey, err := CreateSSHKey(ctx)
 	adApp, err := CreateAppRegistration(ctx)
 	adSpPassword, err := CreateServicePrincipal(ctx, adApp)
-	CreateStorageAccount(ctx, resourceGroup)
 	cluster, err := containerservice.NewManagedCluster(ctx, aksClusterName, &containerservice.ManagedClusterArgs{
 		ResourceGroupName: resourceGroup.Name,
 		AgentPoolProfiles: containerservice.ManagedClusterAgentPoolProfileArray{
