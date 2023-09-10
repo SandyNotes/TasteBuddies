@@ -9,3 +9,13 @@ services:
       - "8000:8000"
     env_file:
       - .env
+  mongodb:
+    image: mongo
+    restart: unless-stopped
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo:/data/db
+volumes:
+  mongo:
