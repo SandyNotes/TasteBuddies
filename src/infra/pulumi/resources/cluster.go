@@ -2,8 +2,6 @@ package resources
 
 import (
 	"encoding/base64"
-	"os"
-	"strconv"
 
 	"github.com/pulumi/pulumi-azure-native-sdk/containerservice/v2"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -13,13 +11,13 @@ import (
 Creates the aks cluster
 */
 func CreateCluster(ctx *pulumi.Context) error {
-	aksClusterName := os.Getenv("AKSCLUSTERNAME")
-	aksAgentPoolName := os.Getenv("AKSAGENTPOOLNAME")
-	aksSize, _ := strconv.Atoi(os.Getenv("AKSSIZE"))
-	aksVMSize := os.Getenv("AKSVMSIZE")
-	aksAdminUsername := os.Getenv("AKSADMINUSERNAME")
-	aksOS := os.Getenv("AKSOS")
-	kubernetesVersion := os.Getenv("AKSKUBERNETESVERSION")
+	aksClusterName := "tastebuddiesaks"
+	// aksAgentPoolName := "tastebuddiesagentpool"
+	aksSize := 30
+	aksVMSize := "Standard_DS2_v2"
+	aksAdminUsername := "tastebuddies-aks"
+	aksOS := "Linux"
+	kubernetesVersion := "1.27"
 	resourceGroup, _ := CreateResource(ctx)
 	sshKey, err := CreateSSHKey(ctx)
 	adApp, err := CreateAppRegistration(ctx)
@@ -28,12 +26,13 @@ func CreateCluster(ctx *pulumi.Context) error {
 		ResourceGroupName: resourceGroup.Name,
 		AgentPoolProfiles: containerservice.ManagedClusterAgentPoolProfileArray{
 			&containerservice.ManagedClusterAgentPoolProfileArgs{
-				Name:         pulumi.String(aksAgentPoolName),
+				Name:         pulumi.String("agentpool"),
 				Mode:         pulumi.String("System"),
 				OsDiskSizeGB: pulumi.Int(aksSize),
 				Count:        pulumi.Int(3),
 				VmSize:       pulumi.String(aksVMSize),
 				OsType:       pulumi.String(aksOS),
+				Type:         pulumi.String("VirtualMachineScaleSets"),
 			},
 		},
 		LinuxProfile: &containerservice.ContainerServiceLinuxProfileArgs{

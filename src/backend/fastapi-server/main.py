@@ -85,9 +85,7 @@ async def create_favorite(request: Request):
     jwt_secret = environ.get("JWTSECRET")
     try: 
         jwt_decoded = jwt.decode(encoded_jwt, jwt_secret, algorithms=["HS256"])
-        print(jwt_decoded)
         timestamp = datetime.fromisoformat(jwt_decoded.get("last_signed"))
-        print(timestamp.minute)
         if timestamp.minute > 15:
             return {
                 "message": "JWT expired!",

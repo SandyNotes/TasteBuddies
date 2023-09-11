@@ -2,17 +2,17 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: server-secret
-data:
+stringData:
   spoonacular-api-key: ""
+  mongodb-uri: ""
+  jwt-secret: ""
 ---
-
 kind: ConfigMap
 apiVersion: v1
 metadata:
   name: nginx-configuration
   labels:
     app: ingress-nginx
-
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -35,7 +35,6 @@ metadata:
   name: nginx-ingress-serviceaccount
   labels:
     app: ingress-nginx
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -161,55 +160,53 @@ spec:
       terminationGracePeriodSeconds: 60
       containers:
       - name: fastapi-server
-        image: 
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8000
-            scheme: HTTP
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
-        ports:
+        image: tastebuddiesbackend.azurecr.io/tastebuddiesbackend
+        # livenessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: 8000
+        #     scheme: HTTP
+        #   initialDelaySeconds: 30
+        #   timeoutSeconds: 5
         env: 
-        - name: FOODAPIKEY
-          valueFrom: 
-            secretKeyRef: 
-              key: spoonacular-api-key
-              name: server-secret
-        - containerPort: 8000
+          - name: FOODAPIKEY
+            valueFrom: 
+              secretKeyRef: 
+                key: spoonacular-api-key
+                name: server-secret
+          - name: MONGOURI
+            valueFrom: 
+              secretKeyRef: 
+                key: mongodb-uri
+                name: server-secret
+          - name: JWTSECRET
+            valueFrom: 
+              secretKeyRef: 
+                key: jwt-secret
+                name: server-secret
+        ports:
+          - containerPort: 8000
         resources:
           limits:
             cpu: 10m
-            memory: 20Mi
+            memory: 50Mi
+      imagePullSecrets:
+        - name: acr-secret
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: fastapi-server
+  name: fastapi-server-service
   labels:
     app: fastapi-server
 spec:
+  type: 'LoadBalancer'
   ports:
   - port: 80
     targetPort: 8000
+    name: http
   selector:
     app: fastapi-server
 
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: ingress-nginx
-  labels:
-    app: ingress-nginx
-spec:
-  type: 'LoadBalancer'
-  selector:
-    app: ingress-nginx
-  ports:
-  - name: http
-    port: 80
-    targetPort: http
-  - name: https
-    port: 443
-    targetPort: https
+
