@@ -16,6 +16,8 @@ client = mongo.get_database()
 """
 Gets a food cusine, returns a json dictionary result of various recipes of cuisines
 """
+
+
 @app.post("/api/food/")
 async def food_retrival(food_request: food.Food):
     api_key = environ.get("FOODAPIKEY")
@@ -31,11 +33,16 @@ async def food_retrival(food_request: food.Food):
             return {"message": "JWT expired!", "status_code": 403}
         user_database = client["TasteBuddies"]
         preferences = user_database["preferences"]
+        username = jwt_decoded.get("username")
+
+        # Creates a dictionary to find the user
         find_result = {"username": f"{username}"}
         result = user_database.preferences.find_one(find_result)
+
         preferences_result = result.get("ingrident_types_to_avoid")
         ingridents_to_avoid = ",".join(preferences_result)
         current_date_isostring = datetime.now().isoformat()
+
         updated_date = current_date_isostring
         username = jwt_decoded.get("username")
         new_jwt = jwt.encode(
@@ -115,13 +122,13 @@ def create_favorite(new_favorite: favorite.NewFavorite):
         item = new_favorite.favorited_item
         user_database = client["TasteBuddies"]
         favorites = user_database["Favorites"]
+        username = jwt_decoded.get("username")
         user_data = {
-            "username": jwt_decoded.get("username"),
+            "username": username,
             "favorited_item": item,
         }
         current_date_isostring = datetime.now().isoformat()
         updated_date = current_date_isostring
-        username = jwt_decoded.get("username")
         new_jwt = jwt.encode(
             {"username": f"{username}", "last_signed": f"{updated_date}"},
             jwt_secret,
