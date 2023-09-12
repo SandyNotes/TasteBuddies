@@ -48,7 +48,7 @@ jobs:
           cd src/backend/fastapi-server
 
           docker buildx build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/tastebuddiesbackend:${{ github.sha }} -f prod.dockerfile .
-
+          docker login -u ${{ ACR_USERNAME }} -p ${{ ACR_PASSWORD }}
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/tastebuddiesbackend:${{ github.sha }}
       
       - name: Deploy to Azure Container Instances
