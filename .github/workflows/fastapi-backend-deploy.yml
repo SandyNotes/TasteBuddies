@@ -73,7 +73,7 @@ jobs:
           spoonacular-api-key: ${{ secrets.FOODAPIKEY }}
           mongodb-uri: ${{ secrets.MONGOURI }}
           jwt-secret: ${{ secrets.JWTSECRET }}
-          cusines: ${{ variables.CUSINES }}
+          cusines: ${{ secrets.CUSINES }}
           sha: ${{ github.sha }}
         run: >
           sed -i.back "s|FILLERFOODKEY|${spoonacular-api-key}|g"
