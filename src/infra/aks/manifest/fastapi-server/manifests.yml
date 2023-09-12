@@ -3,10 +3,10 @@ kind: Secret
 metadata:
   name: server-secret
 stringData:
-  spoonacular-api-key: ""
-  mongodb-uri: ""
-  jwt-secret: ""
-  cusines: ""
+  spoonacular-api-key: "FILLERFOODKEY"
+  mongodb-uri: "FILLERMONGODBURI"
+  jwt-secret: "FILLERJWTSECRET"
+  cusines: "FILLERCUSINES"
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -161,7 +161,7 @@ spec:
       terminationGracePeriodSeconds: 60
       containers:
       - name: fastapi-server
-        image: tastebuddiesbackend.azurecr.io/tastebuddiesbackend
+        image: tastebuddiesbackend.azurecr.io/tastebuddiesbackend:{{LATEST_SHA_IMAGE}}
         livenessProbe:
           httpGet:
             path: /

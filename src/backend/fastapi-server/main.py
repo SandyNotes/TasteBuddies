@@ -14,10 +14,8 @@ app = FastAPI()
 client = mongo.get_database()
 
 """
-
+Gets a food cusine, returns a json dictionary result of various recipes of cuisines
 """
-
-
 @app.post("/api/food/")
 async def food_retrival(food_request: food.Food):
     api_key = environ.get("FOODAPIKEY")

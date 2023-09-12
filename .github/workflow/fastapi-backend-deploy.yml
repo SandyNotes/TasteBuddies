@@ -1,0 +1,93 @@
+name: Deploy fastapi-services
+# Deploys data based off main branch
+on:
+  push:
+    branches: [main]
+    paths: ['src/backend/fastapi-server/**']
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+jobs:
+  # Dispatches the job to dockerize the fastapi server that handles auth and other functionalities
+  Dockerizing_Fastapi_Backend_Api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: |
+          cd src/backend/fastapi-server
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      # Lints the code 
+      - name: Lint with flake8
+        run: |
+          cd src/backend/fastapi-server
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      
+      - name: 'Login via Azure CLI'
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      # Uses buildx for faster building opposed to the old version of docke
+      - name: 'Build and push image'
+          uses: azure/docker-login@v1
+          with:
+            login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+            username: ${{ secrets.ACR_USER }}
+            password: ${{ secrets.ACR_PASSWORD }}
+        - run: |
+            cd src/backend/fastapi-server
+            docker buildx build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/tastebuddiesbackend:${{ github.sha }} -f prod.dockerfile .
+            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/tastebuddiesbackend:${{ github.sha }}
+      
+       - name: 'Deploy to Azure Container Instances'
+          uses: 'azure/aci-deploy@v1'
+          with:
+            resource-group: ${{ secrets.RESOURCE_GROUP }}
+            dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
+            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/tastebuddiesbackend:${{ github.sha }}
+            registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+            registry-username: ${{ secrets.ACR_USER }}
+            registry-password: ${{ secrets.ACR_PASSWORD }}
+            name: tastebuddiesbackend
+            location: 'east us'
+
+  Deploy_Fastapi-Backend_Api:
+    runs-on: ubuntu-latest
+    needs: [Dockerizing_Fastapi_Backend_Api]
+    if: success('Dockerizing_Fastapi_Backend_Api')
+    steps:
+      - uses: actions/checkout@v2
+      # Replaces the secret values, and image values in k8s manifest
+      - name: Replace fastapi-backend values
+       shell: bash
+       env: 
+          spoonacular-api-key: ${{ secrets.FOODAPIKEY }}
+          mongodb-uri: ${{ secrets.MONGOURI }}
+          jwt-secret: ${{ secrets.JWTSECRET }}
+          cusines: ${{ variables.CUSINES }}
+          sha: ${{ github.sha }}
+       run: |
+         sed -i.back "s|FILLERFOODKEY|${spoonacular-api-key}|g" ./src/infra/aks/manifest/fastapi-server/manifests.yml
+         sed -i.back "s|FILLERMONGODBURI|${mongodb-uri}|g" ./src/infra/aks/manifest/fastapi-server/manifests.yml
+         sed -i.back "s|FILLERJWTSECRET|${jwt-secret}|g" ./src/infra/aks/manifest/fastapi-server/manifests.yml
+         sed -i.back "s|FILLERCUSINES|${cusines}|g" ./src/infra/aks/values/manifest-server/manifests.yml
+         sed -i.back "s|{{LATEST_SHA_IMAGE}}|${sha}|g" ./src/infra/aks/values/manifest-server/manifests.yml
+      
+      - uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
+      
+      - uses: actions-hub/kubectl@master
+        with:
+          args: apply -f src/infra/aks/values/fastapi-server/values.yml
+        
+
+      
