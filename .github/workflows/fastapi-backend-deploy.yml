@@ -36,13 +36,13 @@ jobs:
       
       - name: Docker Login
         env:
-          DOCKER_USER: "${{ secrets.ACR_USERNAME }}"
-          DOCKER_PASSWORD: "${{ secrets.ACR_PASSWORD }}"
+          DOCKER_USER: ${{ secrets.ACR_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.ACR_PASSWORD }}
         run: |
           cd src/backend/fastapi-server
+          docker login ${{ secrets.REGISTRY_LOGIN_SERVER }} --username $DOCKER_USER --password-stdin $DOCKER_PASSWORD
           docker buildx build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/tastebuddiesbackend:${{ github.sha }} -f prod.dockerfile .
-          echo $DOCKER_USER
-          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+          
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/tastebuddiesbackend:${{ github.sha }}
   
   Deploy_Fastapi-Backend_Api:
