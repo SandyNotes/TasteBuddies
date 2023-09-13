@@ -62,17 +62,18 @@ jobs:
           cusines: ${{ secrets.CUSINES }}
           sha: ${{ github.sha }}
         run: |
-          ls
+          cd src/infra/aks/manifest/fastapi-server
           sed -i.back "s|FILLERFOODKEY|${spoonacular-api-key}|g"
-          ./src/infra/aks/manifest/fastapi-server/manifests.yml
+          ./manifests.yml
 
-          sed -i.back "s|FILLERMONGODBURI|${mongodb-uri}|g" ./src/infra/aks/manifest/fastapi-server/manifests.yml
+          sed -i.back "s|FILLERMONGODBURI|${mongodb-uri}|g" ./manifests.yml
 
-          sed -i.back "s|FILLERJWTSECRET|${jwt-secret}|g" ./src/infra/aks/manifest/fastapi-server/manifests.yml
+          sed -i.back "s|FILLERJWTSECRET|${jwt-secret}|g" ./manifests.yml
 
-          sed -i.back "s|FILLERCUSINES|${cusines}|g" ./src/infra/aks/values/manifest-server/manifests.yml
+          sed -i.back "s|FILLERCUSINES|${cusines}|g" ./manifests.yml
 
-          sed -i.back "s|{{LATEST_SHA_IMAGE}}|${sha}|g" ./src/infra/aks/values/manifest-server/manifests.yml
+          sed -i.back "s|{{LATEST_SHA_IMAGE}}|${sha}|g" ./manifests.yml
+        
       - uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
