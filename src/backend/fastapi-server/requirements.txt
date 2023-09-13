@@ -2,3 +2,7 @@ uvicorn[standard]
 fastapi
 pydantic
 requests
+pymongo[srv]
+bcrypt
+pyjwt
+flake8
