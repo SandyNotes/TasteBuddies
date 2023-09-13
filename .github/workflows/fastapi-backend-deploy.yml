@@ -55,14 +55,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Replace fastapi-backend values
-        shell: bash
         env:
           spoonacular-api-key: ${{ secrets.FOODAPIKEY }}
           mongodb-uri: ${{ secrets.MONGOURI }}
           jwt-secret: ${{ secrets.JWTSECRET }}
           cusines: ${{ secrets.CUSINES }}
           sha: ${{ github.sha }}
-        run: >
+        run: |
           ls
           sed -i.back "s|FILLERFOODKEY|${spoonacular-api-key}|g"
           ./src/infra/aks/manifest/fastapi-server/manifests.yml
