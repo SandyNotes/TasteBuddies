@@ -62,11 +62,7 @@ jobs:
           cusines: ${{ secrets.CUSINES }}
           sha: ${{ github.sha }}
         run: |
-          export LATEST_SHA_IMAGE=$sha
-          export FILLERCUSINES=$cusines
-          export FILLERJWTSECRET=$jwt-secret
-          export FILLERMONGODBURI=$mongodb-uri
-          export FILLERFOODKEY=$spoonacular-api-key
+          export LATEST_SHA_IMAGE= $sha export FILLERCUSINES= $cusines export FILLERJWTSECRET= $jwt-secret export FILLERMONGODBURI=$mongodb-uri export FILLERFOODKEY=$spoonacular-api-key
           envsubst < src/infra/aks/manifest/fastapi-server/manifests.yml
       - uses: actions-hub/kubectl@master
         env:
