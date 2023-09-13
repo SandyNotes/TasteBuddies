@@ -54,8 +54,6 @@ jobs:
     if: success('Dockerizing_Fastapi_Backend_Api')
     steps:
       - uses: actions/checkout@v2
-      - name: Switch to staging cluster
-        run: kubectl config use-context staging
       - uses: swdotcom/update-and-apply-kubernetes-configs@v1
         with:
           k8-config-file-paths: |
