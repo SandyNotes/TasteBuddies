@@ -54,29 +54,23 @@ jobs:
     if: success('Dockerizing_Fastapi_Backend_Api')
     steps:
       - uses: actions/checkout@v2
-      - name: Replace fastapi-backend values
+      - name: Switch to staging cluster
+        run: kubectl config use-context staging
+      - uses: swdotcom/update-and-apply-kubernetes-configs@v1
+        with:
+          k8-config-file-paths: |
+            src/infra/aks/manifest/fastapi-server/manifests.yml
+          replacement-method: defined
         env:
           spoonacular-api-key: ${{ secrets.FOODAPIKEY }}
           mongodb-uri: ${{ secrets.MONGOURI }}
           jwt-secret: ${{ secrets.JWTSECRET }}
           cusines: ${{ secrets.CUSINES }}
           sha: ${{ github.sha }}
-        run: |
-          cd src/infra/aks/manifest/fastapi-server
-          sed -i.back "s|FILLERFOODKEY|${spoonacular-api-key}|g"
-          ./manifests.yml
-
-          sed -i.back "s|FILLERMONGODBURI|${mongodb-uri}|g" ./manifests.yml
-
-          sed -i.back "s|FILLERJWTSECRET|${jwt-secret}|g" ./manifests.yml
-
-          sed -i.back "s|FILLERCUSINES|${cusines}|g" ./manifests.yml
-
-          sed -i.back "s|{{LATEST_SHA_IMAGE}}|${sha}|g" ./manifests.yml
         
       - uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
       - uses: actions-hub/kubectl@master
         with:
-          args: apply -f src/infra/aks/values/fastapi-server/values.yml
+          args: apply -f src/infra/aks/manifest/fastapi-server/manifests.yml
