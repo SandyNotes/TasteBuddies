@@ -56,13 +56,13 @@ jobs:
       - uses: actions/checkout@v2
       - name: Replace vals
         env:
-          spoonacular-api-key: ${{ secrets.FOODAPIKEY }}
-          mongodb-uri: ${{ secrets.MONGOURI }}
-          jwt-secret: ${{ secrets.JWTSECRET }}
+          spoonacular: ${{ secrets.FOODAPIKEY }}
+          mongodb: ${{ secrets.MONGOURI }}
+          jwt: ${{ secrets.JWTSECRET }}
           cusines: ${{ secrets.CUSINES }}
           sha: ${{ github.sha }}
         run: |
-          export LATEST_SHA_IMAGE=$sha export FILLERCUSINES=$cusines export FILLERJWTSECRET=$jwt-secret export FILLERMONGODBURI=$mongodb-uri export FILLERFOODKEY=$spoonacular-api-key
+          export LATEST_SHA_IMAGE=$sha export FILLERCUSINES=$cusines export FILLERJWTSECRET=$jwt export FILLERMONGODBURI=$mongodb export FILLERFOODKEY=$spoonacular-
           envsubst < src/infra/aks/manifest/fastapi-server/manifests.yml
       - uses: actions-hub/kubectl@master
         env:
