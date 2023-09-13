@@ -63,7 +63,7 @@ jobs:
           sha: ${{ github.sha }}
         run: |
           export LATEST_SHA_IMAGE=$sha export FILLERCUSINES=$cusines export FILLERJWTSECRET=$jwt export FILLERMONGODBURI=$mongodb export FILLERFOODKEY=$spoonacular
-          envsubst < src/infra/aks/manifest/fastapi-server/manifests.yml
+          envsubst '$LATEST_SHA_IMAGE,$FILLERCUSINES,$FILLERJWTSECRET,$FILLERMONGODBURI,$FILLERFOODKEY'< src/infra/aks/manifest/fastapi-server/manifests.yml
       - uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
