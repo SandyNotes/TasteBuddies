@@ -45,6 +45,7 @@ jobs:
           docker buildx build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/tastebuddiesbackend:${{ github.sha }} -f prod.dockerfile .
           
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/tastebuddiesbackend:${{ github.sha }}
+          cd ../../../
   
   Deploy_Fastapi-Backend_Api:
     runs-on: ubuntu-latest
@@ -62,6 +63,7 @@ jobs:
           cusines: ${{ secrets.CUSINES }}
           sha: ${{ github.sha }}
         run: >
+          ls
           sed -i.back "s|FILLERFOODKEY|${spoonacular-api-key}|g"
           ./src/infra/aks/manifest/fastapi-server/manifests.yml
 
