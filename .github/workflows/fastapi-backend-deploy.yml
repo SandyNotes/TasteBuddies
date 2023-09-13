@@ -62,8 +62,8 @@ jobs:
           cusines: ${{ secrets.CUSINES }}
           sha: ${{ github.sha }}
         run: |
-          export LATEST_SHA_IMAGE=$sha export FILLERCUSINES=$cusines export FILLERJWTSECRET=$jwt export FILLERMONGODBURI=$mongodb export FILLERFOODKEY=$spoonacular
-          envsubst '$LATEST_SHA_IMAGE,$FILLERCUSINES,$FILLERJWTSECRET,$FILLERMONGODBURI,$FILLERFOODKEY'< src/infra/aks/manifest/fastapi-server/manifests.yml
+          export LATEST_SHA_IMAGE=$sha export FILLER_CUSINES=$cusines export FILLER_JWTSECRET=$jwt export FILLER_MONGODBURI=$mongodb export FILLER_FOODKEY=$spoonacular
+          envsubst '$LATEST_SHA_IMAGE,$FILLER_CUSINES,$FILLER_JWT,$FILLER_MONGODBURI,$FILLER_FOODKEY' < src/infra/aks/manifest/fastapi-server/manifests.yml
       - uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBECONFIG }}

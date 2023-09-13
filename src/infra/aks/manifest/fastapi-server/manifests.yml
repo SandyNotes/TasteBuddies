@@ -3,10 +3,10 @@ kind: Secret
 metadata:
   name: server-secret
 stringData:
-  spoonacular-api-key: $FILLERFOODKEY
-  mongodb-uri: $FILLERMONGODBURI
-  jwt-secret: $FILLERJWTSECRET
-  cusines: $FILLERCUSINES
+  spoonacular-api-key: $FILLER_FOODKEY
+  mongodb-uri: $FILLER_MONGODBURI
+  jwt-secret: $FILLER_JWTSECRET
+  cusines: $FILLER_CUSINES
 ---
 kind: ConfigMap
 apiVersion: v1
