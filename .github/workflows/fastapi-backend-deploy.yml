@@ -41,7 +41,7 @@ jobs:
           REGISTRY_LOGIN_SERVER: ${{ secrets.REGISTRY_LOGIN_SERVER }} 
         run: |
           cd src/backend/fastapi-server
-          docker login $REGISTRY_LOGIN_SERVER --username $DOCKER_USER --password-stdin $DOCKER_PASSWORD
+          docker login $REGISTRY_LOGIN_SERVER --username $DOCKER_USER --password $DOCKER_PASSWORD
           docker buildx build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/tastebuddiesbackend:${{ github.sha }} -f prod.dockerfile .
           
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/tastebuddiesbackend:${{ github.sha }}
