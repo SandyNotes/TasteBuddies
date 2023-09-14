@@ -4,8 +4,9 @@ from pydantic import BaseModel
 
 class Food(BaseModel):
     jwt: str
+    diet_types: list
 
 
 class Preferences(BaseModel):
     encoded_jwt: str
-    ingrident_types_to_avoid: list
+    intolerances: list

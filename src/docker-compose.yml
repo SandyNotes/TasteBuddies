@@ -3,12 +3,14 @@ services:
   backend:
     container_name: food-api
     build:
-      context: "./fastapi-server"
+      context: "./backend/fastapi-server"
       dockerfile: .dockerfile
     ports:
       - "8000:8000"
     env_file:
       - .env
+    depends_on:
+      - mongodb
   mongodb:
     image: mongo
     restart: unless-stopped
@@ -17,5 +19,14 @@ services:
       - "27017:27017"
     volumes:
       - mongo:/data/db
+  frontend:
+    container_name: frontend
+    build: 
+      context: "./frontend"
+      dockerfile: .dockerfile
+    ports: 
+      - "5173:5173"
+    depends_on:
+      - mongodb
 volumes:
   mongo:

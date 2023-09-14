@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, status, HTTPException
 from os import environ
 from utils import mongo
 import requests
@@ -21,26 +21,29 @@ Gets a food cusine, returns a json dictionary result of various recipes of cuisi
 @app.post("/api/food/")
 async def food_retrival(food_request: food.Food):
     api_key = environ.get("FOODAPIKEY")
-    cusines = environ.get("CUSINES").split(", ")
-    cusine_random_amount = random.randrange(len(cusines))
-    cuisine_samples = random.sample(cusines, cusine_random_amount)
+    
     jwt_secret = environ.get("JWTSECRET")
     encoded_jwt = food_request.jwt
+    # Combine all the diets into a comma seperated list to sastify all conditions
+    diets = ",".join(food_request.diet_types).lower()
+    # Attempts to decode a jwt to ensure its validity
     try:
         jwt_decoded = jwt.decode(encoded_jwt, jwt_secret, algorithms=["HS256"])
+        # Grabs the existing iso string from the jwt to validate when it was last signed.
         timestamp = datetime.fromisoformat(jwt_decoded.get("last_signed"))
         if timestamp.minute > 15:
             return {"message": "JWT expired!", "status_code": 403}
         user_database = client["TasteBuddies"]
-        preferences = user_database["preferences"]
+        intolerances = user_database["intolerances"]
         username = jwt_decoded.get("username")
 
         # Creates a dictionary to find the user
         find_result = {"username": f"{username}"}
         result = user_database.preferences.find_one(find_result)
 
-        preferences_result = result.get("ingrident_types_to_avoid")
-        ingridents_to_avoid = ",".join(preferences_result)
+        # Gets the ingridents to avoid, intolerances
+        preferences_result = result.get("intolerances")
+        intolerances_record = ",".join(preferences_result)
         current_date_isostring = datetime.now().isoformat()
 
         updated_date = current_date_isostring
@@ -50,7 +53,7 @@ async def food_retrival(food_request: food.Food):
             jwt_secret,
             algorithm="HS256",
         )
-        url = f"https://api.spoonacular.com/recipes/complexSearch?cuisine={cuisine_samples}&number=10&addRecipeNutrition=true&addRecipeInformation=true&instructionsRequired=true&intolerances={ingridents_to_avoid}&apiKey={api_key}"
+        url = f"https://api.spoonacular.com/recipes/complexSearch?diet={diets}&number=10&addRecipeNutrition=true&addRecipeInformation=true&instructionsRequired=true&intolerances={intolerances_record}&apiKey={api_key}"
         request = requests.get(url).json()
         response = {"jwt": new_jwt, "status_code": 200, "data": request}
         return response
@@ -61,7 +64,7 @@ async def food_retrival(food_request: food.Food):
         }
 
 
-@app.post("/api/signup/user/")
+@app.post("/api/signup/user/", status_code=status.HTTP_201_CREATED)
 def create_user(new_user: user.User):
     try:
         user_database = client["TasteBuddies"]
@@ -81,8 +84,10 @@ def create_user(new_user: user.User):
             user_database.user_collection.insert_one(user_data)
         return {"Message": "User created!", "status": 200}
     except ValueError as e:
-        print(e)
-        return {"Message": "Error occured while creating user!"}
+        raise HTTPException(
+        status_code=500,
+        detail=f'User already exists!',
+    )
 
 
 @app.post("/api/signin/user/")
@@ -144,7 +149,7 @@ def create_favorite(new_favorite: favorite.NewFavorite):
         }
 
 
-@app.put("/api/preference/")
+@app.put("/api/intolerances/")
 def create_preference(preferences_model: food.Preferences):
     encoded_jwt = preferences_model.encoded_jwt
     jwt_secret = environ.get("JWTSECRET")
@@ -153,14 +158,14 @@ def create_preference(preferences_model: food.Preferences):
         timestamp = datetime.fromisoformat(jwt_decoded.get("last_signed"))
         if timestamp.minute > 15:
             return {"message": "JWT expired!", "status_code": 403}
-        ingrident_types_to_avoid = preferences_model.ingrident_types_to_avoid
+        intolerances_data = preferences_model.intolerances
         user_database = client["TasteBuddies"]
-        preferences = user_database["preferences"]
+        intolerances = user_database["intolerances"]
         username = jwt_decoded.get("username")
         find_result = {"username": f"{username}"}
         user_data = {
             "username": username,
-            "ingrident_types_to_avoid": ingrident_types_to_avoid,
+            "intolerances": intolerances,
         }
         current_date_isostring = datetime.now().isoformat()
         updated_date = current_date_isostring
@@ -170,11 +175,11 @@ def create_preference(preferences_model: food.Preferences):
             jwt_secret,
             algorithm="HS256",
         )
-        if user_database.preferences.count_documents(find_result) >= 1:
-            user_database.preferences.delete_many(find_result)
-            user_database.preferences.insert_one(user_data)
+        if user_database.intolerances.count_documents(find_result) >= 1:
+            user_database.intolerances.delete_many(find_result)
+            user_database.intolerances.insert_one(user_data)
         else:
-            user_database.preferences.insert_one(user_data)
+            user_database.intolerances.insert_one(user_data)
         response = {"jwt": new_jwt, "status_code": 200}
         return response
     except:
