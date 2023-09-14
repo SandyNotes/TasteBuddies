@@ -5,7 +5,7 @@ import {
   Heading,
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
-import {useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom'
 
 interface HeaderProps {
   showBackButton: boolean
@@ -13,10 +13,10 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ showBackButton, content }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const goBack = () => {
-		navigate(-1);
-	}
+    navigate(-1)
+  }
 
   return (
     <>

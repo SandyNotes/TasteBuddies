@@ -17,43 +17,44 @@ import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 import { Link as ReactRouterLink, useNavigate } from 'react-router-dom'
 
 const SignUp = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
-  
   const [formData, setFormData] = useState({ 
     username: '', 
     password: '' 
-  });
+  })
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const requestBody = {
+      'username': formData.username,
+      'password': formData.password
+    }
 
     try {
-      const response = await fetch('/api/signup', {
+      const response = await fetch('/api/signup/user/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
-      });
+        body: JSON.stringify(requestBody),
+      })
 
-      if (response.ok) {
-        console.log('Sign up successful');
+      if (response.status === 201) {
+        console.log('User created!')
+        navigate('/preferences')
       } else {
-        const data = await response.json();
-        console.error('Sign up failed:', data.message);
+        console.error('User creation failed')
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('An error occurred', error)
     }
-    // TODO: move to after successful sign up
-    navigate('/preferences');
-  };
+  }
 
   const handleChange = (e: { target: { name: string; value: string; } }) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+  }
 
   return (
     <Flex
