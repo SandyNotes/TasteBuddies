@@ -1,8 +1,6 @@
 package resources
 
 import (
-	"fmt"
-
 	"github.com/pulumi/pulumi-azure-native-sdk/network/v2"
 	"github.com/pulumi/pulumi-azure-native-sdk/resources/v2"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -17,8 +15,8 @@ func CreateVirtualNetwork(ctx *pulumi.Context, resourceGroup *resources.Resource
 			},
 		},
 
-		Location:           pulumi.String(fmt.Sprintf("%s", resourceGroup.Location)),
-		ResourceGroupName:  pulumi.String(fmt.Sprintf("%s", resourceGroup.Name)),
+		Location:           resourceGroup.Location,
+		ResourceGroupName:  resourceGroup.Name,
 		VirtualNetworkName: pulumi.String(virtualNetworkName),
 	})
 	if err != nil {

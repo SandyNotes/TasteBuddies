@@ -19,9 +19,14 @@ func CreateCluster(ctx *pulumi.Context) error {
 	aksOS := "Linux"
 	kubernetesVersion := "1.27"
 	resourceGroup, _ := CreateResource(ctx)
-	sshKey, err := CreateSSHKey(ctx)
-	adApp, err := CreateAppRegistration(ctx)
-	adSpPassword, err := CreateServicePrincipal(ctx, adApp)
+	sshKey, _ := CreateSSHKey(ctx)
+	adApp, _ := CreateAppRegistration(ctx)
+	adSpPassword, _ := CreateServicePrincipal(ctx, adApp)
+	vNet, _ := CreateVirtualNetwork(ctx, resourceGroup)
+	subnet, _ := CreateSubnet(ctx, resourceGroup, vNet)
+	publicIp, _ := CreatePublicIp(ctx, resourceGroup)
+	_, err := CreateFirewall(ctx, resourceGroup, subnet, publicIp)
+	_, err = CreateACRInstance(ctx, resourceGroup)
 	cluster, err := containerservice.NewManagedCluster(ctx, aksClusterName, &containerservice.ManagedClusterArgs{
 		ResourceGroupName: resourceGroup.Name,
 		AgentPoolProfiles: containerservice.ManagedClusterAgentPoolProfileArray{

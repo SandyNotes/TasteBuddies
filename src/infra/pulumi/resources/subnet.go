@@ -10,7 +10,7 @@ func CreateSubnet(ctx *pulumi.Context, resourceGroup *resources.ResourceGroup, v
 	subnetName := "tastebuddiessubnet"
 	subnet, err := network.NewSubnet(ctx, "subnet", &network.SubnetArgs{
 		AddressPrefix:      pulumi.String("10.0.0.0/16"),
-		ResourceGroupName:  pulumi.String("tastebuddiesrg"),
+		ResourceGroupName:  resourceGroup.Name,
 		SubnetName:         pulumi.String(subnetName),
 		VirtualNetworkName: pulumi.String("tastebuddiesvirtualnetwork"),
 	})
