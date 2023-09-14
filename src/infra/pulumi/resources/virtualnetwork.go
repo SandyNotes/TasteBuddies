@@ -6,9 +6,8 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-func CreateVirtualNetwork(ctx *pulumi.Context, resourceGroup *resources.ResourceGroup) (*network.VirtualNetwork, error) {
-	virtualNetworkName := "tastebuddiesvirtualnetwork"
-	vNet, err := network.NewVirtualNetwork(ctx, virtualNetworkName, &network.VirtualNetworkArgs{
+func CreateVirtualNetwork(ctx *pulumi.Context, resourceGroup *resources.ResourceGroup, vnetName string) (*network.VirtualNetwork, error) {
+	vNet, err := network.NewVirtualNetwork(ctx, vnetName, &network.VirtualNetworkArgs{
 		AddressSpace: &network.AddressSpaceArgs{
 			AddressPrefixes: pulumi.StringArray{
 				pulumi.String("10.0.0.0/16"),
@@ -17,7 +16,7 @@ func CreateVirtualNetwork(ctx *pulumi.Context, resourceGroup *resources.Resource
 
 		Location:           resourceGroup.Location,
 		ResourceGroupName:  resourceGroup.Name,
-		VirtualNetworkName: pulumi.String(virtualNetworkName),
+		VirtualNetworkName: pulumi.String(vnetName),
 	})
 	if err != nil {
 		var empty *network.VirtualNetwork

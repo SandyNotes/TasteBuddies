@@ -6,7 +6,6 @@ stringData:
   spoonacular-api-key: $FILLER_FOODKEY
   mongodb-uri: $FILLER_MONGODBURI
   jwt-secret: $FILLER_JWTSECRET
-  cusines: $FILLER_CUSINES
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -185,16 +184,11 @@ spec:
               secretKeyRef: 
                 key: jwt-secret
                 name: server-secret
-          - name: CUSINES
-            valueFrom: 
-              secretKeyRef: 
-                key: cusines
-                name: server-secret
         ports:
           - containerPort: 8000
         resources:
           limits:
-            cpu: 10m
+            cpu: 20m
             memory: 50Mi
       imagePullSecrets:
         - name: acr-secret

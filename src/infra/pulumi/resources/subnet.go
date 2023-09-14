@@ -6,13 +6,12 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-func CreateSubnet(ctx *pulumi.Context, resourceGroup *resources.ResourceGroup, vnet *network.VirtualNetwork) (*network.Subnet, error) {
-	subnetName := "tastebuddiessubnet"
-	subnet, err := network.NewSubnet(ctx, "subnet", &network.SubnetArgs{
-		AddressPrefix:      pulumi.String("10.0.0.0/16"),
+func CreateSubnet(ctx *pulumi.Context, resourceGroup *resources.ResourceGroup, vnet *network.VirtualNetwork, vnetName string) (*network.Subnet, error) {
+	subnet, err := network.NewSubnet(ctx, vnetName, &network.SubnetArgs{
+		AddressPrefix:      pulumi.String("10.0.0.0/26"),
 		ResourceGroupName:  resourceGroup.Name,
-		SubnetName:         pulumi.String(subnetName),
-		VirtualNetworkName: pulumi.String("tastebuddiesvirtualnetwork"),
+		SubnetName:         pulumi.String(vnetName),
+		VirtualNetworkName: vnet.Name,
 	})
 
 	if err != nil {
