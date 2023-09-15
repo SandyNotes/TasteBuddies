@@ -161,13 +161,6 @@ spec:
       containers:
       - name: fastapi-server
         image: tastebuddiesacrregistry.azurecr.io/tastebuddiesbackend:$LATEST_SHA_IMAGE
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8000
-            scheme: HTTP
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
         env: 
           - name: FOODAPIKEY
             valueFrom: 
@@ -192,7 +185,7 @@ spec:
             memory: 50Mi
       imagePullSecrets:
         - name: acr-secret
-      restartPolicy: "Always"
+      
 
 ---
 apiVersion: v1
