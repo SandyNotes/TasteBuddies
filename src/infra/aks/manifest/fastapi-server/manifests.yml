@@ -192,6 +192,7 @@ spec:
             memory: 50Mi
       imagePullSecrets:
         - name: acr-secret
+      restartPolicy: "Always"
 
 ---
 apiVersion: v1
