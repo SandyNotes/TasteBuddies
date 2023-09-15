@@ -178,7 +178,7 @@ spec:
                 key: jwt-secret
                 name: server-secret
         ports:
-          - containerPort: 8443
+          - containerPort: 8000
         resources:
           limits:
             cpu: 20m
