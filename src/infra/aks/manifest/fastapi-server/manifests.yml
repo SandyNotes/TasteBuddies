@@ -200,6 +200,9 @@ spec:
   - port: 80
     targetPort: 8000
     name: http
+  - port: 443
+    targetPort: 8443
+    name: https
   selector:
     app: fastapi-server
 
