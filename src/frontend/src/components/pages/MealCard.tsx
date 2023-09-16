@@ -24,7 +24,8 @@ const MealCard = ({ meal, setCurrentIndex, totalLength, currentIndex}) => {
         'encoded_jwt': token,
         'favorited_item': meal
       }
-      console.log(foodData)
+      
+      console.log(process.env.BACKENDURI)
       const foodResponse = await fetch(process.env.BACKENDURI + '/api/favorite', {
         method: 'POST',
         headers: {

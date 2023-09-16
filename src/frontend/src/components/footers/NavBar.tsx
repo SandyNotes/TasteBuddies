@@ -6,7 +6,6 @@ import {
   // Link as ChakraLink,
 } from '@chakra-ui/react'
 import React from 'react'
-// import { Link as ReactRouterLink } from 'react-router-dom'
 
 interface NavBarProps {
   currentPage: string
