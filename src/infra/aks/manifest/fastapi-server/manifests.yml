@@ -708,8 +708,11 @@ spec:
           - containerPort: 8000
         resources:
           limits:
-            cpu: 20m
-            memory: 50Mi
+              processor: 2
+              memory: 800Mi
+          requests:
+              processor: 1
+              memory: 100Mi
       imagePullSecrets:
         - name: acr-secret
 ---
