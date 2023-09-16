@@ -7,6 +7,7 @@ stringData:
   mongodb-uri: $FILLER_MONGODBURI
   jwt-secret: $FILLER_JWTSECRET
   allowed-origins: $FILLER_ORGINS
+  cusines: $FILLER_CUSINES
 ---
 
 apiVersion: v1
@@ -703,6 +704,11 @@ spec:
             valueFrom: 
               secretKeyRef: 
                 key: allowed-origins
+                name: server-secret
+          - name: CUSINES
+            valueFrom: 
+              secretKeyRef: 
+                key: cusines
                 name: server-secret
         ports:
           - containerPort: 8000
