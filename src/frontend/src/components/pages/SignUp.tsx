@@ -17,43 +17,61 @@ import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 import { Link as ReactRouterLink, useNavigate } from 'react-router-dom'
 
 const SignUp = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   
   const [formData, setFormData] = useState({ 
     username: '', 
     password: '' 
-  });
+  })
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
-    e.preventDefault();
+    e.preventDefault()
+    const requestBody = {
+      'username': formData.username,
+      'password': formData.password
+    }
 
     try {
-      const response = await fetch('/api/signup', {
+      const signUpResponse = await fetch(process.env.BACKENDURI + '/api/api/signup/user/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
-      });
+        body: JSON.stringify(requestBody),
+      })
 
-      if (response.ok) {
-        console.log('Sign up successful');
+      if (signUpResponse.status === 201) {
+        console.log('User created!')
+        const loginResponse = await fetch(process.env.BACKENDURI + '/api/api/signin/user/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        })
+        if (loginResponse.ok) {
+          console.log('Login success!')
+          const loginResponseJson = await loginResponse.json()
+          localStorage.setItem('jwt', loginResponseJson.jwt)
+          navigate('/preferences')
+        } else {
+          console.error('Login after signup failed:', loginResponse)
+        }
       } else {
-        const data = await response.json();
-        console.error('Sign up failed:', data.message);
+        const data = await signUpResponse.json()
+        console.error('Sign up failed:', data.message)
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error)
     }
-    // TODO: move to after successful sign up
-    navigate('/preferences');
-  };
+
+  }
 
   const handleChange = (e: { target: { name: string; value: string; } }) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+  }
 
   return (
     <Flex

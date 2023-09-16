@@ -1,7 +1,19 @@
-import { Box, Container, Stack, useColorModeValue } from '@chakra-ui/react'
+import { 
+  Box, 
+  Container, 
+  Stack, 
+  useColorModeValue,
+  // Link as ChakraLink,
+} from '@chakra-ui/react'
+import React from 'react'
+// import { Link as ReactRouterLink } from 'react-router-dom'
+
+interface NavBarProps {
+  currentPage: string
+}
 
 // TODO: bottom navbar with 4 buttons - My Lists, Suggestions, Search, Account
-const NavBar = () => {
+const NavBar: React.FC<NavBarProps> = ({ currentPage }) => {
   return (
     <div className='footer'>
       <Box
@@ -16,17 +28,19 @@ const NavBar = () => {
           justify={{ base: 'center', md: 'space-between' }}
           align={{ base: 'center', md: 'center' }}>
           <Stack direction={'row'} spacing={6}>
-            <Box as='a' href={'#'}>
-              Home
+            {/* <ChakraLink as={ReactRouterLink} to='/preferences'> */}
+            <Box style={currentPage === 'Likes' ? { color: 'red' } : {}}>
+              Likes
             </Box>
-            <Box as='a' href={'#'}>
-              About
+            {/* </ChakraLink> */}
+            <Box style={currentPage === 'Suggestions' ? { color: 'red' } : {}}>
+              Suggestions
             </Box>
-            <Box as='a' href={'#'}>
-              Blog
+            <Box style={currentPage === 'Search' ? { color: 'red' } : {}}>
+              Search
             </Box>
-            <Box as='a' href={'#'}>
-              Contact
+            <Box style={currentPage === 'Account' ? { color: 'red' } : {}}>
+              Account
             </Box>
           </Stack>
         </Container>

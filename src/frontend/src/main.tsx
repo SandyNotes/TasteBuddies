@@ -16,6 +16,8 @@ import SignUp from './components/pages/SignUp.tsx'
 import Login from './components/pages/Login.tsx'
 import Preferences from './components/pages/Preferences.tsx'
 import Dashboard from './components/pages/Dashboard.tsx'
+import MealDetails from './components/pages/MealDetails.tsx'
+import NavBar from './components/footers/NavBar.tsx'
 
 const router = createBrowserRouter (
   createRoutesFromElements (
@@ -23,7 +25,7 @@ const router = createBrowserRouter (
       <Route path='/' element={<App />}>
         <Route index={true} path='/' element={
           <>
-            <Header showBackButton={false} content='Logo' />
+            <Header showBackButton={false} />
             <Home />
             <SignUpOrLogin />
           </>} 
@@ -42,7 +44,7 @@ const router = createBrowserRouter (
         />
         <Route path='/preferences' element={
           <>
-            <Header showBackButton={true} content='Food Preferences?' />
+            <Header showBackButton={false} content='Food Preferences?' />
             <Container centerContent><Preferences /></Container>
           </>} 
         />
@@ -50,6 +52,13 @@ const router = createBrowserRouter (
           <>
             <Header showBackButton={false} content='Logo' />
             <Container centerContent><Dashboard /></Container>
+            <NavBar currentPage='Suggestions' />
+          </>} 
+        />
+        <Route path='/mealdetails' element={
+          <>
+            <Header showBackButton={false} content='Logo' />
+            <Container centerContent><MealDetails /></Container>
           </>} 
         />
       </Route>

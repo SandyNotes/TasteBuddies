@@ -7,7 +7,7 @@ function App() {
       <Box minH="100vh" display="flex" flexDirection="column">
         <Outlet />
       </Box>
-  </ChakraProvider>
+    </ChakraProvider>
   )
 }
 
