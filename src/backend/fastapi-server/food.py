@@ -153,7 +153,4 @@ def create_favorite(new_favorite: favorite.NewFavorite):
         response = {"jwt": new_jwt, "status_code": 200}
         return response
     except:
-        return {
-            "message": "Encountered issue while authenticating!",
-            "status_code": 403,
-        }
+        return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content="Encountered issue while authenticating!")

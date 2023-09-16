@@ -6,6 +6,7 @@ stringData:
   spoonacular-api-key: $FILLER_FOODKEY
   mongodb-uri: $FILLER_MONGODBURI
   jwt-secret: $FILLER_JWTSECRET
+  allowed-origins: $FILLER_ORGINS
 ---
 
 apiVersion: v1
@@ -697,6 +698,11 @@ spec:
             valueFrom: 
               secretKeyRef: 
                 key: jwt-secret
+                name: server-secret
+          - name: ALLOWEDORIGINS
+            valueFrom: 
+              secretKeyRef: 
+                key: allowed-orgins
                 name: server-secret
         ports:
           - containerPort: 8000
