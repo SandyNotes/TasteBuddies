@@ -1,6 +1,5 @@
 import { 
   Image, 
-  Link as ChakraLink, 
 } from '@chakra-ui/react'
 import { useLocation } from 'react-router-dom'
 const MealDetails = () => {

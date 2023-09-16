@@ -4,7 +4,7 @@ import {
 } from '@chakra-ui/react'
 import MealCard from './MealCard'
 import { useLocation } from 'react-router-dom'
-import React, { useState } from 'react';
+import { useState } from 'react';
 const Dashboard = () => {
   const location = useLocation()
   const foodData = location.state?.foodData.results
