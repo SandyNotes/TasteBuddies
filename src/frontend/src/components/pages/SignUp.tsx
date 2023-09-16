@@ -19,12 +19,13 @@ import { Link as ReactRouterLink, useNavigate } from 'react-router-dom'
 const SignUp = () => {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
+  
   const [formData, setFormData] = useState({ 
     username: '', 
     password: '' 
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
     const requestBody = {
       'username': formData.username,
@@ -32,7 +33,7 @@ const SignUp = () => {
     }
 
     try {
-      const response = await fetch('/api/signup/user/', {
+      const signUpResponse = await fetch(process.env.BACKENDURI + '/api/api/signup/user/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,15 +41,31 @@ const SignUp = () => {
         body: JSON.stringify(requestBody),
       })
 
-      if (response.status === 201) {
+      if (signUpResponse.status === 201) {
         console.log('User created!')
-        navigate('/preferences')
+        const loginResponse = await fetch(process.env.BACKENDURI + '/api/api/signin/user/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        })
+        if (loginResponse.ok) {
+          console.log('Login success!')
+          const loginResponseJson = await loginResponse.json()
+          localStorage.setItem('jwt', loginResponseJson.jwt)
+          navigate('/preferences')
+        } else {
+          console.error('Login after signup failed:', loginResponse)
+        }
       } else {
-        console.error('User creation failed')
+        const data = await signUpResponse.json()
+        console.error('Sign up failed:', data.message)
       }
     } catch (error) {
-      console.error('An error occurred', error)
+      console.error('Error:', error)
     }
+
   }
 
   const handleChange = (e: { target: { name: string; value: string; } }) => {

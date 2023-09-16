@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Flex,
   Box,
@@ -15,11 +16,43 @@ import { Link as ReactRouterLink, useNavigate } from 'react-router-dom'
 
 const Login = () => {
   const navigate = useNavigate()
+  const [formData, setFormData] = useState({ 
+    username: '', 
+    password: '' 
+  })
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
-    // TODO: move to after success
-    navigate('/dashboard')
+    const requestBody = {
+      'username': formData.username,
+      'password': formData.password
+    }
+
+    try {
+      const response = await fetch(process.env.BACKENDURI + '/api/api/signin/user/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      })
+
+      if (response.ok) {
+        console.log('Login success!')
+        const responseJson = await response.json()
+        localStorage.setItem('jwt', responseJson.jwt)
+        navigate('/preferences')
+      } else {
+        console.error('Login failed')
+      }
+    } catch (error) {
+      console.error('An error occurred', error)
+    }
+  }
+
+  const handleChange = (e: { target: { name: string; value: string; } }) => {
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
   }
   
   return (
@@ -35,11 +68,11 @@ const Login = () => {
             <form onSubmit={handleSubmit}>
               <FormControl id='username'>
                 <FormLabel>Username</FormLabel>
-                <Input type='text' />
+                <Input type='text' name='username' value={formData.username} onChange={handleChange}/>
               </FormControl><br />
               <FormControl id='password'>
                 <FormLabel>Password</FormLabel>
-                <Input type='password' />
+                <Input type='password' name='password' value={formData.password} onChange={handleChange}/>
               </FormControl>
               <Stack spacing={10}>
                 <Stack
@@ -62,7 +95,7 @@ const Login = () => {
             </form>
             <Stack pt={6}>
               <Text align={'center'}>
-              Don't have an account? <ChakraLink as={ReactRouterLink} to='/signup' color={'blue.400'} >Sign up</ChakraLink>
+                Don't have an account? <ChakraLink as={ReactRouterLink} to='/signup' color={'blue.400'} >Sign up</ChakraLink>
               </Text>
             </Stack>
           </Stack>

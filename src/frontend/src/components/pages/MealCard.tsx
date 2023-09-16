@@ -1,12 +1,20 @@
 import { CheckIcon, SmallCloseIcon, StarIcon } from '@chakra-ui/icons'
-import { Box, Button, Flex, Image } from '@chakra-ui/react'
+import { 
+  Box, 
+  Button, 
+  Flex, 
+  Image, 
+  Link as ChakraLink, 
+} from '@chakra-ui/react'
+import { Link as ReactRouterLink } from 'react-router-dom'
 
 const MealCard = () => {
+
   const meal = {
     imageUrl: 'cake.jpg',
     description: 'Recipe title recipe title recipe title',
   }
-  
+
   return (
     <>
       <Image src={meal.imageUrl} mt={9} /><br />
@@ -40,16 +48,18 @@ const MealCard = () => {
         >
           <StarIcon boxSize={5} />
         </Button>
-        <Button
-          borderRadius='full'
-          bg='green.500'
-          size='md'
-          color='white'
-          p={0}
-          _hover={{ bg: 'green.600' }}
-        >
-          <CheckIcon boxSize={6} />
-        </Button>
+        <ChakraLink as={ReactRouterLink} to='/mealdetails' color={'blue.400'}>
+          <Button
+            borderRadius='full'
+            bg='green.500'
+            size='md'
+            color='white'
+            p={0}
+            _hover={{ bg: 'green.600' }}
+          >
+            <CheckIcon boxSize={6} />
+          </Button>
+        </ChakraLink>
       </Flex>
     </>
   )

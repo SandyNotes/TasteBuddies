@@ -5,12 +5,12 @@ LABEL Owner 'SandyNotes'
 WORKDIR /backend/fastapi-server
 
 # copy the content of the local src directory to the working directory
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY test-requirements.txt .
+RUN pip install -r test-requirements.txt
 
 COPY . .
 
 #It will expose the FastAPI application on port `8000` inside the container
 EXPOSE 8000
 #It is the command that will start and run the FastAPI application container
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]

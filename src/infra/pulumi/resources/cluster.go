@@ -14,7 +14,7 @@ func CreateCluster(ctx *pulumi.Context) error {
 	aksClusterName := "tastebuddiesaks"
 	// aksAgentPoolName := "tastebuddiesagentpool"
 	aksSize := 30
-	aksVMSize := "Standard_DS2_v2"
+	aksVMSize := "Standard_B2ms"
 	aksAdminUsername := "tastebuddies-aks"
 	aksOS := "Linux"
 	kubernetesVersion := "1.27"
@@ -22,11 +22,7 @@ func CreateCluster(ctx *pulumi.Context) error {
 	sshKey, _ := CreateSSHKey(ctx)
 	adApp, _ := CreateAppRegistration(ctx)
 	adSpPassword, _ := CreateServicePrincipal(ctx, adApp)
-	vNet, _ := CreateVirtualNetwork(ctx, resourceGroup)
-	subnet, _ := CreateSubnet(ctx, resourceGroup, vNet)
-	publicIp, _ := CreatePublicIp(ctx, resourceGroup)
-	_, err := CreateFirewall(ctx, resourceGroup, subnet, publicIp)
-	_, err = CreateACRInstance(ctx, resourceGroup)
+	_, err := CreateACRInstance(ctx, resourceGroup)
 	cluster, err := containerservice.NewManagedCluster(ctx, aksClusterName, &containerservice.ManagedClusterArgs{
 		ResourceGroupName: resourceGroup.Name,
 		AgentPoolProfiles: containerservice.ManagedClusterAgentPoolProfileArray{
@@ -34,7 +30,7 @@ func CreateCluster(ctx *pulumi.Context) error {
 				Name:         pulumi.String("agentpool"),
 				Mode:         pulumi.String("System"),
 				OsDiskSizeGB: pulumi.Int(aksSize),
-				Count:        pulumi.Int(3),
+				Count:        pulumi.Int(2),
 				VmSize:       pulumi.String(aksVMSize),
 				OsType:       pulumi.String(aksOS),
 				Type:         pulumi.String("VirtualMachineScaleSets"),

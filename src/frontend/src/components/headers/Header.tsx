@@ -9,7 +9,8 @@ import {useNavigate} from 'react-router-dom'
 
 interface HeaderProps {
   showBackButton: boolean
-  content: string
+  content?: string
+  element?: React.ReactElement
 }
 
 const Header: React.FC<HeaderProps> = ({ showBackButton, content }) => {

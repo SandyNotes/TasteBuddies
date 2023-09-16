@@ -7,19 +7,27 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-func CreateFirewall(ctx *pulumi.Context, resourceGroup *resources.ResourceGroup, subnet *network.Subnet, publicIp *network.PublicIPAddress) (*firewall.Firewall, error) {
-	newFirewall, err := firewall.NewFirewall(ctx, "exampleFirewall", &firewall.FirewallArgs{
+func CreateFirewall(ctx *pulumi.Context, resourceGroup *resources.ResourceGroup, publicSubnet *network.Subnet, managementSubnet *network.Subnet, publicIp *network.PublicIPAddress, managementIp *network.PublicIPAddress) (*firewall.Firewall, error) {
+	tastebuddiesFirewallName := "tastebuddiesFw"
+	firewallManagementIpConfig := firewall.FirewallManagementIpConfigurationArgs{
+		Name:              pulumi.String("managementconfiguration"),
+		SubnetId:          managementSubnet.ID(),
+		PublicIpAddressId: managementIp.ID(),
+	}
+
+	newFirewall, err := firewall.NewFirewall(ctx, tastebuddiesFirewallName, &firewall.FirewallArgs{
 		Location:          resourceGroup.Location,
 		ResourceGroupName: resourceGroup.Name,
 		SkuName:           pulumi.String("AZFW_VNet"),
 		SkuTier:           pulumi.String("Basic"),
 		IpConfigurations: firewall.FirewallIpConfigurationArray{
 			&firewall.FirewallIpConfigurationArgs{
-				Name:              pulumi.String("configuration"),
-				SubnetId:          subnet.ID(),
+				Name:              pulumi.String("publicconfiguration"),
+				SubnetId:          publicSubnet.ID(),
 				PublicIpAddressId: publicIp.ID(),
 			},
 		},
+		ManagementIpConfiguration: firewallManagementIpConfig,
 	})
 	return newFirewall, err
 }

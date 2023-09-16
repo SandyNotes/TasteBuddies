@@ -1,5 +1,14 @@
-import React from 'react'
-import { Box, VStack, FormControl, FormLabel, Switch, Button, Flex, Spacer } from '@chakra-ui/react'
+import React, { useState } from 'react'
+import {
+  Box,
+  VStack,
+  FormControl,
+  FormLabel,
+  Switch,
+  Button,
+  Flex,
+  Spacer,
+} from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 
 // https://spoonacular.com/food-api/docs#Intolerances
@@ -33,10 +42,11 @@ interface Diet {
   'Whole30': boolean;
 }
 
-const FoodPreferences = () => {
+const Preferences = () => {
   const navigate = useNavigate()
+  const token = localStorage.getItem('jwt')
 
-  const [intolerances, setIntolerances] = React.useState<Intolerance>({
+  const [intolerances, setIntolerances] = useState<Intolerance>({
     'Dairy': false,
     'Egg': false,
     'Gluten': false,
@@ -51,7 +61,7 @@ const FoodPreferences = () => {
     'Wheat': false
   })
 
-  const [diets, setDiets] = React.useState<Diet>({
+  const [diets, setDiets] = useState<Diet>({
     'Gluten free': false,
     'Ketogenic': false,
     'Vegetarian': false,
@@ -79,12 +89,64 @@ const FoodPreferences = () => {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    // TODO: request body
+  const selectedIntolerances = (Object.keys(intolerances) as (keyof Intolerance)[]).filter(
+    (item) => intolerances[item] === true
+  )
+
+  const selectedDiets = (Object.keys(diets) as (keyof Diet)[]).filter(
+    (item) => diets[item] === true
+  )
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Selected Intolerances:', intolerances)
-    console.log('Selected Diets:', diets)
-    navigate('/dashboard')
+
+    const intolerancesData = {
+      'encoded_jwt': token,
+      'intolerances': selectedIntolerances.map(item => item.toString()),
+    }
+    
+    try {
+      const intoleranceResponse = await fetch(process.env.BACKENDURI + '/api/api/intolerances/', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify(intolerancesData),
+      })
+
+      if (intoleranceResponse.ok) {
+        console.log('Intolerances saved successfully')
+
+        const foodData = {
+          'jwt': token,
+          'diet_types': selectedDiets.map(item => item.toString()),
+        }
+        
+        const foodResponse = await fetch(process.env.BACKENDURI + '/api/api/food/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify(foodData),
+        })
+        if (foodResponse.ok) {
+          console.log('Diets saved successfully')
+          const foodResponseJson = await foodResponse.json()
+          console.log(foodResponseJson)
+          localStorage.setItem('jwt', foodResponseJson.jwt)
+          navigate('/dashboard', { state: { foodData } })
+        }
+        else {
+          console.error('Failed to save diets:', foodResponse)
+        }
+      } else {
+        console.error('Failed to save intolerances:', intoleranceResponse)
+      }
+    } catch (error) {
+      console.error('Error while saving preferences:', error)
+    }
   }
 
   return (
@@ -130,4 +192,4 @@ const FoodPreferences = () => {
   )
 }
 
-export default FoodPreferences
+export default Preferences
