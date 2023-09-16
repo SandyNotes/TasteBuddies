@@ -9,18 +9,22 @@ from datetime import datetime, timedelta
 import jwt
 import bcrypt
 import requests
-
+import random
 client = mongo.get_database()
 food_router = APIRouter(
     prefix="/api",
     tags= ["food"]
 )
-@food_router.post("/api/food/")
+@food_router.post("/food/")
 async def food_retrival(food_request: food.Food):
     api_key = environ.get("FOODAPIKEY")
     
     jwt_secret = environ.get("JWTSECRET")
     encoded_jwt = food_request.jwt
+    cusines = environ.get("CUSINES").lower().split(",")
+    cusines_amount = random.randrange(len(cusines))
+    random_cusines = random.sample(cusines, cusines_amount)
+    final_cusines =",".join(random_cusines)
     # Combine all the diets into a comma seperated list to sastify all conditions
     diets = ",".join(food_request.diet_types).lower()
     # Attempts to decode a jwt to ensure its validity
@@ -50,14 +54,14 @@ async def food_retrival(food_request: food.Food):
             jwt_secret,
             algorithm="HS256",
         )
-        url = f"https://api.spoonacular.com/recipes/complexSearch?diet={diets}&number=10&addRecipeNutrition=true&addRecipeInformation=true&instructionsRequired=true&intolerances={intolerances_record}&apiKey={api_key}"
+        url = f"https://api.spoonacular.com/recipes/complexSearch?diet={diets}&number=10&addRecipeNutrition=true&addRecipeInformation=true&instructionsRequired=true&intolerances={intolerances_record}&apiKey={api_key}&cuisine={final_cusines}"
         request = requests.get(url).json()
         response = {"jwt": new_jwt, "status_code": 200, "data": request}
         return response
     except:
         return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content="Could not authenticate!")
 
-@food_router.put("/api/intolerances/")
+@food_router.put("/intolerances/")
 def create_preference(preferences_model: food.Preferences):
     encoded_jwt = preferences_model.encoded_jwt
     jwt_secret = environ.get("JWTSECRET")
@@ -95,7 +99,7 @@ def create_preference(preferences_model: food.Preferences):
     except:
         return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content="Could not authenticate!")
 
-@food_router.get("/api/favorites/")
+@food_router.get("/favorites/")
 def get_favorites(favorite: favorite.GetFavorite):
     encoded_jwt = favorite.encoded_jwt
     jwt_secret = environ.get("JWTSECRET")
@@ -125,7 +129,7 @@ def get_favorites(favorite: favorite.GetFavorite):
     except:
         return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content="Could not authenticate!")
 
-@food_router.post("/api/favorite/")
+@food_router.post("/favorite/")
 def create_favorite(new_favorite: favorite.NewFavorite):
     encoded_jwt = new_favorite.encoded_jwt
     jwt_secret = environ.get("JWTSECRET")

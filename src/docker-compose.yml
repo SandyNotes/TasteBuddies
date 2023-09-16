@@ -28,5 +28,7 @@ services:
       - "5173:5173"
     depends_on:
       - mongodb
+    environment:
+      - BACKENDURI=http://localhost:8000
 volumes:
   mongo:

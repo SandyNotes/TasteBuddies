@@ -29,7 +29,7 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch(process.env.BACKENDURI + '/api/api/signin/user/', {
+      const response = await fetch(process.env.BACKENDURI + '/api/signin/user/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

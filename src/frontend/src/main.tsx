@@ -50,14 +50,14 @@ const router = createBrowserRouter (
         />
         <Route path='/dashboard' element={
           <>
-            <Header showBackButton={false} content='Logo' />
+            <Header showBackButton={false} content='Dashboard' />
             <Container centerContent><Dashboard /></Container>
             <NavBar currentPage='Suggestions' />
           </>} 
         />
         <Route path='/mealdetails' element={
           <>
-            <Header showBackButton={false} content='Logo' />
+            <Header showBackButton={true} content='Logo' />
             <Container centerContent><MealDetails /></Container>
           </>} 
         />

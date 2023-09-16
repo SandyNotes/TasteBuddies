@@ -33,7 +33,7 @@ const SignUp = () => {
     }
 
     try {
-      const signUpResponse = await fetch(process.env.BACKENDURI + '/api/api/signup/user/', {
+      const signUpResponse = await fetch(process.env.BACKENDURI + '/api/signup/user/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const SignUp = () => {
 
       if (signUpResponse.status === 201) {
         console.log('User created!')
-        const loginResponse = await fetch(process.env.BACKENDURI + '/api/api/signin/user/', {
+        const loginResponse = await fetch(process.env.BACKENDURI + '/api/signin/user/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

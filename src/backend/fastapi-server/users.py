@@ -14,7 +14,7 @@ users_router = APIRouter(
     prefix="/api",
     tags= ["food"]
 )
-@users_router.post("/api/signup/user/")
+@users_router.post("/signup/user/")
 def create_user(new_user: user.User):
     try:
         user_database = client["TasteBuddies"]
@@ -37,7 +37,7 @@ def create_user(new_user: user.User):
        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content="Could not create user!")
 
 
-@users_router.post("/api/signin/user/")
+@users_router.post("/signin/user/")
 def login_user(new_user: user.User) -> None:
     try:
         jwt_secret = environ.get("JWTSECRET")
@@ -64,7 +64,7 @@ def login_user(new_user: user.User) -> None:
     except:
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content="Error occured while signing in!")
 
-@users_router.delete("/api/user/")
+@users_router.delete("/user/")
 def delete_user(deleting_user: user.DeleteUser):
     encoded_jwt = deleting_user.encoded_jwt
     jwt_secret = environ.get("JWTSECRET")

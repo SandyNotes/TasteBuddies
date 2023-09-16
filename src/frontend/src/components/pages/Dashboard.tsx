@@ -4,17 +4,18 @@ import {
 } from '@chakra-ui/react'
 import MealCard from './MealCard'
 import { useLocation } from 'react-router-dom'
-
+import React, { useState } from 'react';
 const Dashboard = () => {
   const location = useLocation()
-  const foodData = location.state?.foodData
-  console.log(foodData)
-
+  const foodData = location.state?.foodData.results
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const lengthOfArray = foodData.length;
+  console.log(currentIndex)
   return (
     <>
       <Flex flex='1' p={4} flexDirection='column' alignItems='center' justifyContent='center'>
         <Container maxW='lg' textAlign='center'>
-          <MealCard />
+          <MealCard meal={foodData[currentIndex]} setCurrentIndex={setCurrentIndex} totalLength={lengthOfArray} currentIndex={currentIndex}/>
         </Container>
       </Flex>
     </>

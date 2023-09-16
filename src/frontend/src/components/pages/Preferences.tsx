@@ -106,7 +106,7 @@ const Preferences = () => {
     }
     
     try {
-      const intoleranceResponse = await fetch(process.env.BACKENDURI + '/api/api/intolerances/', {
+      const intoleranceResponse = await fetch(process.env.BACKENDURI + '/api/intolerances/', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ const Preferences = () => {
           'diet_types': selectedDiets.map(item => item.toString()),
         }
         
-        const foodResponse = await fetch(process.env.BACKENDURI + '/api/api/food/', {
+        const foodResponse = await fetch(process.env.BACKENDURI + '/api/food/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -132,9 +132,8 @@ const Preferences = () => {
           body: JSON.stringify(foodData),
         })
         if (foodResponse.ok) {
-          console.log('Diets saved successfully')
           const foodResponseJson = await foodResponse.json()
-          console.log(foodResponseJson)
+          const foodData = foodResponseJson.data
           localStorage.setItem('jwt', foodResponseJson.jwt)
           navigate('/dashboard', { state: { foodData } })
         }
