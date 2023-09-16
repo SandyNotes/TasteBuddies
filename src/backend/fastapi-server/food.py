@@ -5,7 +5,7 @@ from utils import mongo
 from fastapi.responses import JSONResponse
 from fastapi import status, APIRouter
 from os import environ
-from datetime import datetime
+from datetime import datetime, timedelta
 import jwt
 import bcrypt
 import requests
@@ -28,8 +28,8 @@ async def food_retrival(food_request: food.Food):
         jwt_decoded = jwt.decode(encoded_jwt, jwt_secret, algorithms=["HS256"])
         # Grabs the existing iso string from the jwt to validate when it was last signed.
         timestamp = datetime.fromisoformat(jwt_decoded.get("last_signed"))
-        if timestamp.minute > 15:
-            return {"message": "JWT expired!", "status_code": 403}
+        # if timestamp.minute > 15:
+        #     return {"message": "JWT expired!", "status_code": 403}
         user_database = client["TasteBuddies"]
         intolerances = user_database["intolerances"]
         username = jwt_decoded.get("username")
@@ -64,8 +64,10 @@ def create_preference(preferences_model: food.Preferences):
     try:
         jwt_decoded = jwt.decode(encoded_jwt, jwt_secret, algorithms=["HS256"])
         timestamp = datetime.fromisoformat(jwt_decoded.get("last_signed"))
-        if timestamp.minute > 15:
-            return {"message": "JWT expired!", "status_code": 403}
+        current_date = datetime.now()
+        # Fix timestamp issue
+        # if timestamp > current_date - timedelta(minutes=15):
+        #     return {"message": "JWT expired!", "status_code": 403}
         intolerances_data = preferences_model.intolerances
         user_database = client["TasteBuddies"]
         intolerances = user_database["intolerances"]
@@ -100,8 +102,8 @@ def get_favorites(favorite: favorite.GetFavorite):
     try:
         jwt_decoded = jwt.decode(encoded_jwt, jwt_secret, algorithms=["HS256"])
         timestamp = datetime.fromisoformat(jwt_decoded.get("last_signed"))
-        if timestamp.minute > 15:
-            return {"message": "JWT expired!", "status_code": 403}
+        # if timestamp.minute > 15:
+        #     return {"message": "JWT expired!", "status_code": 403}
         user_database = client["TasteBuddies"]
         favorites = user_database["Favorites"]
         current_date_isostring = datetime.now().isoformat()
@@ -114,7 +116,7 @@ def get_favorites(favorite: favorite.GetFavorite):
             {"username": f"{username}"}, {"_id": 0}
         )
         for favorite in favorites_list:
-            favorites_collection.food_routerend(favorite)
+            favorites_collection.append(favorite)
         response = {
             "jwt": new_jwt,
             "favorites": favorites_collection,
@@ -122,3 +124,36 @@ def get_favorites(favorite: favorite.GetFavorite):
         return JSONResponse(status_code=status.HTTP_200_OK, content=response)
     except:
         return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content="Could not authenticate!")
+
+@food_router.post("/api/favorite/")
+def create_favorite(new_favorite: favorite.NewFavorite):
+    encoded_jwt = new_favorite.encoded_jwt
+    jwt_secret = environ.get("JWTSECRET")
+    try:
+        jwt_decoded = jwt.decode(encoded_jwt, jwt_secret, algorithms=["HS256"])
+        timestamp = datetime.fromisoformat(jwt_decoded.get("last_signed"))
+        # if timestamp.minute > 15:
+        #     return {"message": "JWT expired!", "status_code": 403}
+        item = new_favorite.favorited_item
+        user_database = client["TasteBuddies"]
+        favorites = user_database["Favorites"]
+        username = jwt_decoded.get("username")
+        user_data = {
+            "username": username,
+            "favorited_item": item,
+        }
+        current_date_isostring = datetime.now().isoformat()
+        updated_date = current_date_isostring
+        new_jwt = jwt.encode(
+            {"username": f"{username}", "last_signed": f"{updated_date}"},
+            jwt_secret,
+            algorithm="HS256",
+        )
+        user_database.favorites.insert_one(user_data)
+        response = {"jwt": new_jwt, "status_code": 200}
+        return response
+    except:
+        return {
+            "message": "Encountered issue while authenticating!",
+            "status_code": 403,
+        }

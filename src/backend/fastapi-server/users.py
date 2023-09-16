@@ -65,14 +65,14 @@ def login_user(new_user: user.User) -> None:
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content="Error occured while signing in!")
 
 @users_router.delete("/api/user/")
-def login_user(deleting_user: user.DeleteUser):
+def delete_user(deleting_user: user.DeleteUser):
     encoded_jwt = deleting_user.encoded_jwt
     jwt_secret = environ.get("JWTSECRET")
     try:
         jwt_decoded = jwt.decode(encoded_jwt, jwt_secret, algorithms=["HS256"])
         timestamp = datetime.fromisoformat(jwt_decoded.get("last_signed"))
-        if timestamp.minute > 15:
-            return {"message": "JWT expired!", "status_code": 403}
+        # if timestamp.minute > 15:
+        #     return {"message": "JWT expired!", "status_code": 403}
         
         user_database = client["TasteBuddies"]
         user_collection = user_database["Users"]
