@@ -712,7 +712,7 @@ spec:
               memory: 800Mi
           requests:
               cpu: 2
-              memory: 100Mi
+              memory: 800Mi
       imagePullSecrets:
         - name: acr-secret
 ---
