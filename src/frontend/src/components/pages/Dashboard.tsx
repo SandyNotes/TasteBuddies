@@ -5,6 +5,7 @@ import {
 import MealCard from './MealCard'
 import { useLocation } from 'react-router-dom'
 import { useState } from 'react';
+// @ts-ignore
 const Dashboard = () => {
   const location = useLocation()
   const foodData = location.state?.foodData.results

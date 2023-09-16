@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 // @ts-ignore
-const MealCard: React.FC<{}> = ({ meal, setCurrentIndex, totalLength, currentIndex}) => {
+const MealCard = ({ meal, setCurrentIndex, totalLength, currentIndex}) => {
   const RejectFood = () => {
     if(currentIndex === totalLength - 1){
       console.log("finished!")
